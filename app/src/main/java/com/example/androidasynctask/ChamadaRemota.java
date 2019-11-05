@@ -3,6 +3,7 @@ package com.example.androidasynctask;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -22,32 +23,34 @@ public class ChamadaRemota extends AsyncTask<String, Void, String> {
 
         URL url;
         HttpURLConnection urlConnection = null;
-
-        String resultado = new String() ;
-        try{
+        BufferedReader reader;
+        String resultado = new String();
+        try {
             url = new URL("http://10.0.2.2:80//JSONIntegracao///json_rest_livros.php");
 
             urlConnection = (HttpURLConnection) url.openConnection();
 
             InputStream in = urlConnection.getInputStream();
 
-            InputStreamReader isw = new InputStreamReader(in);
-
-            int data = isw.read();
-            while (data != -1) {
-                char current = (char) data;
-                data = isw.read();
-
-                resultado += current;
+            reader = new BufferedReader(new InputStreamReader(in));
+            StringBuilder result = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result.append(line);
             }
+            resultado = result.toString();
 
-        }catch (Exception e) {
+            if (reader != null) {
+                reader.close();
+            }
+        } catch (Exception e) {
             Log.d("erro acessando remoto", e.getMessage());
             e.printStackTrace();
-        }finally {
-            if(urlConnection != null) {
+        } finally {
+            if (urlConnection != null) {
                 urlConnection.disconnect();
             }
+
         }
 
 
